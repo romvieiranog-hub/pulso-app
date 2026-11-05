@@ -1,0 +1,29 @@
+{
+  "name": "Pulso",
+  "short_name": "Pulso",
+  "start_url": "/pulso-app/",
+  "scope": "/pulso-app/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#1E1E1E",
+  "theme_color": "#262626",
+  "lang": "fr",
+  "icons": [
+    {
+      "src": "/pulso-app/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/pulso-app/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/pulso-app/maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
