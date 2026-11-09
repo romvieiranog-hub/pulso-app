@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Test son Pulso</title>
+<style>
+body{font-family:-apple-system,system-ui,sans-serif;background:#1e1e1e;color:#fff;margin:0;padding:20px 16px;}
+h1{font-size:22px;margin:0 0 6px} p{color:#bbb;font-size:15px;line-height:1.4}
+button{display:block;width:100%;font-size:19px;padding:18px;margin:12px 0;border:0;border-radius:14px;background:#9cff4a;color:#111;font-weight:700}
+#info{font-size:13px;color:#999;white-space:pre-wrap;background:#2a2a2a;padding:10px;border-radius:10px}
+</style></head><body>
+<h1>Test du son</h1>
+<p>Lance Apple Music, enlève le mode silencieux, puis appuie sur chaque bouton dans l'ordre. Après chaque bouton, regarde si la musique continue.</p>
+<button id="b1">1. Cloche (mode « ambient »)</button>
+<button id="b2">2. Cloche (mode « transient »)</button>
+<button id="b3">3. Voix de l'iPhone</button>
+<div id="info"></div>
+<script>
+const info=document.getElementById('info');
+const as=navigator.audioSession;
+const ua=navigator.userAgent;
+const ios=(ua.match(/OS (\d+)_(\d+)/)||[]).slice(1).join('.');
+const standalone=navigator.standalone||matchMedia('(display-mode: standalone)').matches;
+function log(t){info.textContent+=t+'\n';}
+log('iOS : '+(ios||'?')+' · audioSession : '+(as?'oui ('+as.type+')':'non')+' · écran d\'accueil : '+(standalone?'oui':'non'));
+let ctx=null, buf=null;
+async function play(type){
+  try{ if(as) as.type=type; }catch(e){ log('type refusé : '+e.message); }
+  if(!ctx){ const C=window.AudioContext||window.webkitAudioContext; ctx=new C(); }
+  if(ctx.state!=='running') await ctx.resume();
+  if(!buf){ const data=await (await fetch('assets/assets/sounds/cloche.69649d5754f595036ba3d8852564a52a.wav')).arrayBuffer(); buf=await new Promise((res,rej)=>ctx.decodeAudioData(data,res,rej)); }
+  const s=ctx.createBufferSource(); s.buffer=buf; const g=ctx.createGain(); g.gain.value=0.6; s.connect(g).connect(ctx.destination); s.start();
+  log('Bouton joué ('+type+'), audioSession maintenant : '+(as?as.type:'-'));
+}
+document.getElementById('b1').onclick=()=>play('ambient').catch(e=>log('erreur '+e.message));
+document.getElementById('b2').onclick=()=>play('transient').catch(e=>log('erreur '+e.message));
+document.getElementById('b3').onclick=()=>{ const u=new SpeechSynthesisUtterance('Trois, deux, un'); u.lang='fr-FR'; speechSynthesis.speak(u); log('Voix jouée'); };
+</script></body></html>
